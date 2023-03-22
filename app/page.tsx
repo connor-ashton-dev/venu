@@ -1,91 +1,117 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Image from "next/image";
+import axios from "axios";
+import bg from "../public/background.jpg";
+import { useState } from "react";
 
 export default function Home() {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [didSubmit, setDidSubmit] = useState<boolean>(false);
+  const handleForm = async () => {
+    const data = {
+      name: name,
+      email: email,
+    };
+    const JSONdata = JSON.stringify(data);
+    const endpoint = "/api/addEmail";
+    const options = {
+      // The method is POST because we are sending data.
+      method: "POST",
+      // Tell the server we're sending JSON.
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Body of the request is the JSON data we created above.
+      body: JSONdata,
+    };
+    const response = await fetch(endpoint, options);
+    console.log(response);
+    setDidSubmit(true);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
+    <>
+      {/* First screen */}
+      <section className="h-screen w-screen flex flex-col items-center relative">
+        <Image
+          src={bg}
+          alt="bg"
+          style={{
+            objectFit: "cover",
+            overflow: "hidden",
+            height: "100%",
+            position: "absolute",
+            top: 0,
+          }}
+          className="-z-10"
+        />
+        {/* Title container */}
+        <div className="mt-[70%] lg:mt-80 lg:mx-40 py-10 px-10 lg:py-20 lg:px-10 flex flex-col justify-center items-center shadow-xl border rounded-xl bg-white absolute">
+          <h1 className="text-xl w-60 lg:w-80 lg:text-2xl mb-8 lg:mb-12 text-center">
+            Let's find your dream wedding venue
+          </h1>
           <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#form"
+            className="rounded-lg px-4 py-2 hover:shadow-md text-lg lg:text-xl bg-theme-gold text-white"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
+            Sign up for our waitlist
           </a>
         </div>
-      </div>
+      </section>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+      {/* About section */}
+      <section
+        className="h-screen flex flex-col items-center  bg-theme-slate text-white text-xl tracking-wide"
+        id="about"
+      >
+        <h1 className="mt-40 mb-20 text-4xl">Who we are</h1>
+        <div className="w-80 text-center flex flex-col items-center gap-8">
+          <p>Finding a wedding venue is hard, but it doesn't have to be.</p>
+          <p>
+            With 100% price transparency and the BEST selection of local venues,
+            we can find your perfect venue. Today!
+          </p>
         </div>
-      </div>
+      </section>
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+      {/* Sign up section */}
+      <section
+        className="h-screen flex flex-col items-center bg-theme-gold"
+        id="form"
+      >
+        <div className="flex flex-col gap-10 py-10 px-10 lg:py-20 lg:px-20 items-start mt-60 lg:mt-80 bg-white rounded-xl">
+          {!didSubmit ? (
+            <>
+              <h1 className="text-xl">Sign up for early access</h1>
+              <input
+                placeholder="Name"
+                className="border-b focus:outline-none w-60"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <input
+                placeholder="Email"
+                className="border-b focus:outline-none w-60"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+              <div className="w-full flex flex-row justify-end">
+                <button className="text-right" onClick={handleForm}>
+                  Submit
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center">
+              <h1 className="pb-4">Thank you.</h1>
+              <p>We will get back to you shortly</p>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
+  );
 }
